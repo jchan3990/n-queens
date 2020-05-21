@@ -148,13 +148,18 @@
       var counter = 0;
       // create var to hold col index to assess at each row
       var currentCol = majorDiagonalColumnIndexAtFirstRow;
-        // set to input value initially
+      // set to input value initially
 
       // iterate over rows to visit (n - input value)
-        // Do we need to subtract the currentCol?
-      for (var i = 0; i < this.get('n') - Math.abs(majorDiagonalColumnIndexAtFirstRow); i++) {
+      // Do we need to subtract the currentCol?
+      //for (let i = 0; i < this.get('n') - Math.abs(majorDiagonalColumnIndexAtFirstRow); i++) {
+      //for (let i = 0; i < this.get('n') - majorDiagonalColumnIndexAtFirstRow; i++) {
+        for (let i = 0; i < this.get('n'); i++) {
+        // if (i === this.get('n') - Math.abs(majorDiagonalColumnIndexAtFirstRow)) {
+        //   break;
+        // }
+        debugger;
         if (this.get(i)[currentCol] === 1) {
-          debugger;
           counter++;
         }
         currentCol++;
@@ -169,10 +174,10 @@
     hasAnyMajorDiagonalConflicts: function() {
       // iterate over number of col indexes
       // i needs to be able to be negative bc it represents column we're on
-        // can have major diag with neg column index in first row
+      // can have major diag with neg column index in first row
       // -this.get('n') + 2 -- furthest to left
       var column = -this.get('n') + 2;
-      for (var i = 0; i < this.get('n') * 2 - 3; i++) {
+      for (let i = 0; i < this.get('n') * 2 - 3; i++) {
         if (this.hasMajorDiagonalConflictAt(column)) {
           return true;
         }
@@ -188,34 +193,38 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-
-      // create var to count number of pieces in diagonal
-      // create var to hold col index to assess at each row
-        // set to input value initially
-
-      // iterate over rows to visit (input value + 1)
-        // if current row at col index has a piece
-          // increment piece count variable
-        // decrement col index holder
-
-      // if piece counter > 1
-        // return true
-      // otherwise
-        // return false
-
-      return false; // fixme
+      var counter = 0;
+      var currentCol = minorDiagonalColumnIndexAtFirstRow;
+      for (let i = 0; i < minorDiagonalColumnIndexAtFirstRow + 1; i++) {
+        if (i === this.get('n')) {
+          break;
+        }
+        if (this.get(i)[currentCol] === 1) {
+          counter++;
+        }
+        currentCol--;
+      }
+      if (counter > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-
+      var column = 1;
+      for (let i = 0; i < this.get('n') * 2 - 3; i++) {
+        if (this.hasMinorDiagonalConflictAt(column)) {
+          return true;
+        }
+        column++;
+      }
+      return false;
       // iterate over number of col indexes
         // if hasMinorDiagonalConflict(current col index)
           // return true
         // otherwise
           // return false
-
-      return false; // fixme
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
