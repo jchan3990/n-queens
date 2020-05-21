@@ -18,6 +18,11 @@
       }
     },
 
+    // GK: range returns array of numbers from 0 to n-1
+    // get array, then transforming via map
+    // returns new array
+    // 'this' arg tells map what to use as 'this' when executing callback
+    // 'this' is bound to the array we get from invoking range
     rows: function() {
       return _(_.range(this.get('n'))).map(function(rowIndex) {
         return this.get(rowIndex);
@@ -79,12 +84,27 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      var currentRow = this.get(rowIndex);
+      var rowTotal = 0;
+      for (var i = 0; i < currentRow.length; i++) {
+        if (currentRow[i] === 1) {
+          rowTotal++;
+        }
+      }
+      if (rowTotal > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      for (var i = 0; i < this.get('n'); i++) {
+        if (this.hasRowConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -94,12 +114,27 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var counter = 0;
+      for (var i = 0; i < this.get('n'); i++) {
+        var currentRow = this.get(i);
+        if (currentRow[colIndex] === 1) {
+          counter++;
+        }
+      }
+      if (counter > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      for (var i = 0; i < this.get('n'); i++) {
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -109,12 +144,41 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      // create var to count number of pieces in diagonal
+      var counter = 0;
+      // create var to hold col index to assess at each row
+      var currentCol = majorDiagonalColumnIndexAtFirstRow;
+        // set to input value initially
+
+      // iterate over rows to visit (n - input value)
+        // Do we need to subtract the currentCol?
+      for (var i = 0; i < this.get('n') - Math.abs(majorDiagonalColumnIndexAtFirstRow); i++) {
+        if (this.get(i)[currentCol] === 1) {
+          debugger;
+          counter++;
+        }
+        currentCol++;
+      }
+      if (counter > 1) {
+        return true;
+      }
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      // iterate over number of col indexes
+      // i needs to be able to be negative bc it represents column we're on
+        // can have major diag with neg column index in first row
+      // -this.get('n') + 2 -- furthest to left
+      var column = -this.get('n') + 2;
+      for (var i = 0; i < this.get('n') * 2 - 3; i++) {
+        if (this.hasMajorDiagonalConflictAt(column)) {
+          return true;
+        }
+        column++;
+      }
+      return false;
     },
 
 
@@ -124,11 +188,33 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+
+      // create var to count number of pieces in diagonal
+      // create var to hold col index to assess at each row
+        // set to input value initially
+
+      // iterate over rows to visit (input value + 1)
+        // if current row at col index has a piece
+          // increment piece count variable
+        // decrement col index holder
+
+      // if piece counter > 1
+        // return true
+      // otherwise
+        // return false
+
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+
+      // iterate over number of col indexes
+        // if hasMinorDiagonalConflict(current col index)
+          // return true
+        // otherwise
+          // return false
+
       return false; // fixme
     }
 
