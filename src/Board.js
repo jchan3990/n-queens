@@ -158,7 +158,6 @@
         // if (i === this.get('n') - Math.abs(majorDiagonalColumnIndexAtFirstRow)) {
         //   break;
         // }
-        debugger;
         if (this.get(i)[currentCol] === 1) {
           counter++;
         }
