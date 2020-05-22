@@ -15,52 +15,47 @@
 
 
 
-// window.findNRooksSolution = function(n) {
-//   // are we allowed to do this (make a board)? we're basically creating the same thing as the test
-//     // could refactor coutNRooksSolutions to give us first solution
-//   var solution = new Board({'n':n});
-//   for (var i = 0; i < n; i++) {
-//     solution.togglePiece(i, i);
-//   }
-//   //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-//   // console.log(solution.rows());
-//   return solution.rows();
-// };
-
-// Alternative for findNRooksSolution:
 window.findNRooksSolution = function(n) {
-  var solution;
-  var possibilitySet = (function(n) {
-    var empty = [];
-    for (let i = 0; i < n; i++) {
-      empty.push(0);
-    }
-    var possible = [];
-    var pieceIndex = 0;
-    for (let i = 0; i < empty.length; i++) {
-      var newArray = empty.slice();
-      newArray[i] = 1;
-      possible.push(newArray);
-      pieceIndex++;
-    }
-    return possible;
-  })(n);
-  var newMatrix = function(remainingSet, currentMatrix) {
-    var currentMatrix = currentMatrix || [];
-    if (remainingSet.length === 0) {
-      solution = currentMatrix;
-      return;
-    }
-    remainingSet.forEach(possibility => {
-      currentMatrix.push(possibility);
-      remainingSet.splice(remainingSet.indexOf(possibility), 1);
-      newMatrix(remainingSet, currentMatrix)
-    });
+  var solution = new Board({'n':n});
+  for (var i = 0; i < n; i++) {
+    solution.togglePiece(i, i);
   }
-  newMatrix(possibilitySet);
-  console.log('Number of solutions for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  return solution.rows();
 };
+
+// Alternative for findNRooksSolution that does not instantiate Board class:
+// window.findNRooksSolution = function(n) {
+//   var solution;
+//   var possibilitySet = (function(n) {
+//     var empty = [];
+//     for (let i = 0; i < n; i++) {
+//       empty.push(0);
+//     }
+//     var possible = [];
+//     var pieceIndex = 0;
+//     for (let i = 0; i < empty.length; i++) {
+//       var newArray = empty.slice();
+//       newArray[i] = 1;
+//       possible.push(newArray);
+//       pieceIndex++;
+//     }
+//     return possible;
+//   })(n);
+//   var newMatrix = function(remainingSet, currentMatrix) {
+//     var currentMatrix = currentMatrix || [];
+//     if (remainingSet.length === 0) {
+//       solution = currentMatrix;
+//       return;
+//     }
+//     remainingSet.forEach(possibility => {
+//       currentMatrix.push(possibility);
+//       remainingSet.splice(remainingSet.indexOf(possibility), 1);
+//       newMatrix(remainingSet, currentMatrix)
+//     });
+//   }
+//   newMatrix(possibilitySet);
+//   return solution;
+// };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
@@ -79,28 +74,17 @@ window.countNRooksSolutions = function(n) {
       pieceIndex++;
     }
     return possible;
-  })(n); // [1000, 01000, 0010, 0001]
+  })(n);
   var newMatrix = function(remainingSet, currentMatrix) {
-    var currentMatrix = currentMatrix || []; // [1000, ]
-    if (remainingSet.length === 0) { // 4, so false
-      debugger;
+    var currentMatrix = currentMatrix || [];
+    if (remainingSet.length === 0) {
       solutionCount++;
-      //return;
     }
-    // for each possible first row
-    // remaining set here shouldn't change?
-    remainingSet.forEach(possibility => { // 1000
-      // (?) create copy here for remaining set for each main iteration?--then change names of others
+    remainingSet.forEach(possibility => {
       var rowSet = remainingSet.slice();
-      // add current possibility to matrix
       currentMatrix.push(possibility);
-      // kill current possibility from remaining set
-      // (?) kill it from rowSet, not remainingSet?
-      // remainingSet.splice(remainingSet.indexOf(possibility), 1); // [01000, 0010, 0001]
-      rowSet.splice(rowSet.indexOf(possibility), 1); // [01000, 0010, 0001]
-      // call function with remaining possibility set and latest matrix
-      // (?) call w/ rowSet
-      newMatrix(rowSet, currentMatrix) // [01000, 0010, 0001], [1000]
+      rowSet.splice(rowSet.indexOf(possibility), 1);
+      newMatrix(rowSet, currentMatrix);
     });
   }
   newMatrix(possibilitySet);
@@ -110,10 +94,72 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  debugger;
+  var solution;
+  var possibilitySet = (function(n) {
+    var empty = [];
+    for (let i = 0; i < n; i++) {
+      empty.push(0);
+    }
+    var possible = [];
+    var pieceIndex = 0;
+    for (let i = 0; i < empty.length; i++) {
+      var newArray = empty.slice();
+      newArray[i] = 1;
+      possible.push(newArray);
+      pieceIndex++;
+    }
+    return possible;
+  })(n);
+  // holds first row col indexes for maj and minor diagonals
+  var currentMatrix = currentMatrix || [];
+  var diagObj = {'major': [], 'minor': []};
+  var currentRow = 0;
+  var newMatrix = function(remainingSet, currentMatrix) {
+    if (remainingSet.length === 0) {
+      // this code won't work -- static
+      solution = currentMatrix;
+      return;
+    }
+    for (var i = 0; i < remainingSet.length; i++) {
+      // create var for first row col index - maj; need row we're on
+       var majorDiagIndex = getFirstRowColumnIndexForMajorDiagonalOn(currentRow, remainingSet[i].indexOf(1));
+       // create var for first row col index - min; need row we're on
+       var minorDiagIndex = getFirstRowColumnIndexForMinorDiagonalOn(currentRow, remainingSet[i].indexOf(1));
+       // if first row col index for maj and min diagonals of current element aren't in diagObj
+       if (diagObj.major.indexOf(majorDiagIndex) === -1 && diagObj.minor.indexOf(minorDiagIndex) === -1) {
+         currentMatrix.push(remainingSet[i]);
+         // create variable to house remaining possibilities
+        debugger;
+         var rowSet = remainingSet.slice();
+         rowSet.splice(rowSet.indexOf(rowSet[i]), 1);
+         // increment current row
+         currentRow++;
+         // add first row col index (maj) of current element -- push
+         diagObj.major.push(majorDiagIndex);
+         // add first row col index (min) of current element -- push
+         diagObj.minor.push(minorDiagIndex);
+         newMatrix(rowSet, currentMatrix);
+         // otherwise
+       }
+        else if (i === remainingSet.length - 1) {
+          // if we get here, need to wipe currentMatrix completely -- means we failed to add a row
+          currentMatrix = [];
+          currentRow = 0;
+          return;
+        }
+    }
+  }
+  newMatrix(possibilitySet);
   return solution;
+};
+
+var getFirstRowColumnIndexForMajorDiagonalOn = function(rowIndex, colIndex) {
+  return colIndex - rowIndex;
+};
+
+var getFirstRowColumnIndexForMinorDiagonalOn = function(rowIndex, colIndex) {
+  return colIndex + rowIndex;
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
